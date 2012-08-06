@@ -48,22 +48,26 @@ class NewsletterSignup_Step extends OrderStep {
 			$member = $order->Member();
 			if($member) {
 				if($member->NewsletterSignup) {
+					$from = Order_Email::get_from_email();
+					$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
+					$body = "
+						Email: <i>".$member->Email."</i>".
+						"<br /><br />Sign-up: ".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No")).
+						"<br /><br /><br />".print_r($order->BillingAddress(), true);
 					$email = new Email(
-						$from = Order_Email::get_from_email(),
+						$from,
 						$to = Order_Email::get_from_email(),
-						$subject = "newsletter registration update",
-						$body = "Email: ".$member->Email.", Sign-up: ".($member->NewsletterSignup ? "YES" : "NO")
-								."<br /><br /><br />".print_r($order->BillingAddress, 1);
+						$subject,
+						$body
 					);
 					$email->send();
 					//copy!
 					if($this->SendCopyTo){
 						$email = new Email(
-							$from = Order_Email::get_from_email(),
+							$from,
 							$to = $this->SendCopyTo,
-							$subject = "newsletter registration update",
-							$body = "Email: ".$member->Email.", Sign-up: ".($member->NewsletterSignup ? "YES" : "NO")
-									."<br /><br /><br />".print_r($order->BillingAddress, 1);
+							$subject,
+							$body
 						);
 						$email->send();
 					}
