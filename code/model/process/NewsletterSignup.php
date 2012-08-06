@@ -23,7 +23,7 @@ class NewsletterSignup_Step extends OrderStep {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldToTab("Root.Main", new HeaderField("InformAdminAboutNewsletter", _t("OrderStep.INFORMADMINABOUTNEWSLETTER", "Inform admin about newsletter"), 3), "SendMessageToAdmin");
-		$fields->replaceField("SendCopyTo", new EmailField(new EmailField("SendCopyTo", _t("OrderStep.SENDCOPYTO", "Send a copy (another e-mail) to ..."));
+		$fields->replaceField("SendCopyTo", new EmailField("SendCopyTo", _t("OrderStep.SENDCOPYTO", "Send a copy (another e-mail) to ...")));
 		return $fields;
 	}
 
