@@ -57,7 +57,7 @@ class NewsletterSignup_Step extends OrderStep {
 					}
 					$body = "
 						"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
-						"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>"
+						"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>".
 						"<br /><br />".$billingAddressOutput;
 					$email = new Email(
 						$from,
