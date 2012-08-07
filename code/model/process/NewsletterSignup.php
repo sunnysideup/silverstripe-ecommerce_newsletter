@@ -22,7 +22,7 @@ class NewsletterSignup_Step extends OrderStep {
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$fields->addFieldToTab("Root.Main", new HeaderField("InformAdminAboutNewsletter", _t("OrderStep.INFORMADMINABOUTNEWSLETTER", "Inform admin about newsletter"), 3), "SendMessageToAdmin");
+		$fields->addFieldToTab("Root.Main", new HeaderField("InformAdminAboutNewsletter", _t("OrderStep.EMAILDETAILSTO", "Email details to"), 3), "SendMessageToAdmin");
 		$fields->replaceField("SendCopyTo", new EmailField("SendCopyTo", _t("OrderStep.SENDCOPYTO", "Send a copy (another e-mail) to ...")));
 		return $fields;
 	}
@@ -50,10 +50,15 @@ class NewsletterSignup_Step extends OrderStep {
 				if($member->NewsletterSignup) {
 					$from = Order_Email::get_from_email();
 					$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
+					$billingAddress = $order->BillingAddress();
+					$billingAddressOutput = "";
+					if($billingAddress) {
+						$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
+					}
 					$body = "
-						Email: <i>".$member->Email."</i>".
-						"<br /><br />Sign-up: ".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No")).
-						"<br /><br /><br />".print_r($order->BillingAddress(), true);
+						"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
+						"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>"
+						"<br /><br />".$billingAddressOutput;
 					$email = new Email(
 						$from,
 						$to = Order_Email::get_from_email(),
