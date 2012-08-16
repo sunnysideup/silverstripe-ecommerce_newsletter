@@ -50,8 +50,8 @@ class NewsletterSignup_Step extends OrderStep {
 				if($member->NewsletterSignup) {
 					$from = Order_Email::get_from_email();
 					$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
-					$billingAddress = $order->BillingAddress();
 					$billingAddressOutput = "";
+					$billingAddress = $order->BillingAddress();
 					if($billingAddress) {
 						$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
 					}
@@ -77,9 +77,10 @@ class NewsletterSignup_Step extends OrderStep {
 						$email->send();
 					}
 				}
+				//this can be used to connect with third parties (e.g. )
+				$this->extend("updateNewsletterStatus", $member);
 			}
 		}
-		$member->extend("updateNewsletterStatus", $member);
 		return true;
 	}
 
