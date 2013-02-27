@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/ecommerce_newsletter",
+	"name": "sunnysideup/ecommerce_newsletter",
 	"type": "silverstripe-module",
 	"description": "add a newsletter signup to your e-commerce checkout",
 	"homepage": "http://www.silverstripe-ecommerce.com",
