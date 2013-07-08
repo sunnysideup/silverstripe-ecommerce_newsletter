@@ -7,14 +7,8 @@
  */
 
 
-class NewsletterSignupDecorator extends DataObjectDecorator {
+class NewsletterSignupDecorator extends DataExtension {
 
-	function extraStatics() {
-		return array(
-			"db" => array(
-				"NewsletterSignup" => "Boolean"
-			)
-		);
-	}
+	protected static $db = array("NewsletterSignup" => "Boolean");
 
 }
