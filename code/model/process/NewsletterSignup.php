@@ -34,7 +34,7 @@ class NewsletterSignup_Step extends OrderStep {
 	 * @param DataObject $order Order
 	 * @return Boolean
 	 **/
-	public function initStep($order) {
+	public function initStep(Order $order) {
 		return true;
 	}
 
@@ -43,7 +43,7 @@ class NewsletterSignup_Step extends OrderStep {
 	 * @param DataObject $order Order
 	 * @return Boolean
 	 **/
-	public function doStep($order) {
+	public function doStep(Order $order) {
 		if($this->SendMessageToAdmin){
 			$member = $order->Member();
 			if($member) {
@@ -89,7 +89,7 @@ class NewsletterSignup_Step extends OrderStep {
 	 * @param DataObject $order Order
 	 * @return DataObject | Null	(next step OrderStep object)
 	 **/
-	public function nextStep($order) {
+	public function nextStep(Order $order) {
 		return parent::nextStep($order);
 	}
 
@@ -99,7 +99,7 @@ class NewsletterSignup_Step extends OrderStep {
 	 *@param Order $order
 	 *@return FieldSet
 	 **/
-	function addOrderStepFields(&$fields, $order) {
+	function addOrderStepFields(FieldList $fields, Order $order) {
 		$fields = parent::addOrderStepFields($fields, $order);
 		return $fields;
 	}
