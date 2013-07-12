@@ -1,0 +1,7 @@
+Member:
+  extensions:
+    - NewsletterSignupDecorator
+OrderFormAddress:
+  extensions:
+    - NewsletterSignupDecoratorFormFixes
+

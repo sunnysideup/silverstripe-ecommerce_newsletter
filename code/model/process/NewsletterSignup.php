@@ -4,12 +4,12 @@
 
 class NewsletterSignup_Step extends OrderStep {
 
-	static $db = array(
+	private static $db = array(
 		"SendMessageToAdmin" => "Boolean",
 		"SendCopyTo" => "Varchar(255)"
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		"CustomerCanEdit" => 0,
 		"CustomerCanCancel" => 0,
 		"CustomerCanPay" => 1,
