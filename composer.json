@@ -14,6 +14,12 @@
 		}
 	],
 	"require":{
+		"silverstripe/framework": "~3.1",
+		"silverstripe/cms": "~3.1",
 		"sunnysideup/ecommerce": "dev-master"
+	},
+	"extra": {
+		"installer-name": "ecommerce_newsletter"
 	}
 }
+
