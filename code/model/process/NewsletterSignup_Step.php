@@ -20,10 +20,16 @@ class NewsletterSignup_Step extends OrderStep {
 		"SendMessageToAdmin" => 1
 	);
 
+	private static $many_many = array(
+		"MailingLists" => "MailingList"
+	);
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		$fields->addFieldToTab("Root.Main", new HeaderField("InformAdminAboutNewsletter", _t("OrderStep.EMAILDETAILSTO", "Email details to"), 3), "SendMessageToAdmin");
 		$fields->replaceField("SendCopyTo", new EmailField("SendCopyTo", _t("OrderStep.SENDCOPYTO", "Send a copy (another e-mail) to ...")));
+		$mailingLists = MailingList::get()->map();
+		$fields->addFieldToTab("Root.MailingLists", new CheckboxSetField("MailingLists", _t("OrderForm.SIGNUPTONEWSLETTER", "Sign up"), $mailingLists));
 		return $fields;
 	}
 
@@ -44,41 +50,56 @@ class NewsletterSignup_Step extends OrderStep {
 	 * @return Boolean
 	 **/
 	public function doStep(Order $order) {
-		if($this->SendMessageToAdmin){
-			$member = $order->Member();
-			if($member) {
-				if($member->NewsletterSignup) {
-					$from = Order_Email::get_from_email();
-					$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
-					$billingAddressOutput = "";
-					$billingAddress = $order->BillingAddress();
-					if($billingAddress) {
-						$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
-					}
-					$body = "
-						"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
-						"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>".
-						"<br /><br />".$billingAddressOutput;
-					$email = new Email(
-						$from,
-						$to = Order_Email::get_from_email(),
-						$subject,
-						$body
-					);
-					$email->send();
-					//copy!
-					if($this->SendCopyTo){
+		$billingAddress = $order->BillingAddress();
+		$member = $order->Member();
+		if($member && $billingAddress) {
+			$recipient = Recipient::get()->filter(array("Email" => $billingAddress->Email))->first();
+			if(!$recipient) {
+				$recipient = Recipient::create();
+				$recipient->Email = $billingAddress->Email;
+			}
+			$recipient->FirstName = $billingAddress->FirstName;
+			$recipient->Surname = $billingAddress->Surname;
+			$recipient->write();
+			$mailingListToAdd = $member->MailingLists();
+			DB::query("DELETE FROM Member_MailingLists WHERE MemberID = ".$member->ID.";");
+			$recipientsMailingLists = $recipient->MailingLists();
+			$recipientsMailingLists->addMany($mailingListToAdd->map("ID", "ID")->toArray());
+			if($this->SendMessageToAdmin){
+				$member = $order->Member();
+				if($member) {
+					if($member->NewsletterSignup) {
+						$from = Order_Email::get_from_email();
+						$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
+						$billingAddressOutput = "";
+						if($billingAddress) {
+							$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
+						}
+						$body = "
+							"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
+							"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>".
+							"<br /><br />".$billingAddressOutput;
 						$email = new Email(
 							$from,
-							$to = $this->SendCopyTo,
+							$to = Order_Email::get_from_email(),
 							$subject,
 							$body
 						);
 						$email->send();
+						//copy!
+						if($this->SendCopyTo){
+							$email = new Email(
+								$from,
+								$to = $this->SendCopyTo,
+								$subject,
+								$body
+							);
+							$email->send();
+						}
 					}
+					//this can be used to connect with third parties (e.g. )
+					$this->extend("updateNewsletterStatus", $member);
 				}
-				//this can be used to connect with third parties (e.g. )
-				$this->extend("updateNewsletterStatus", $member);
 			}
 		}
 		return true;
