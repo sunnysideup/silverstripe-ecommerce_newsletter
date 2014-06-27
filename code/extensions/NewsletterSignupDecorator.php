@@ -9,6 +9,6 @@
 
 class NewsletterSignupDecorator extends DataExtension {
 
-	private static $db = array("NewsletterSignup" => "Boolean");
+	private static $many_many = array("MailingLists" => "MailingList");
 
 }

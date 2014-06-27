@@ -1,0 +1,7 @@
+OrderStep:
+  order_steps_to_include:
+    step1: OrderStep_Created
+    step2: OrderStep_Submitted
+    step3: NewsletterSignup_Step
+    step4: OrderStep_Archived
+

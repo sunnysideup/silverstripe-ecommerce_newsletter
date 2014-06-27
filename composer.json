@@ -14,7 +14,8 @@
 		}
 	],
 	"require":{
-		"sunnysideup/ecommerce": "dev-master"
+		"sunnysideup/ecommerce": "dev-master",
+		"silverstripe/newsletter": "*"
 	},
 	"extra": {
 		"installer-name": "ecommerce_newsletter"
