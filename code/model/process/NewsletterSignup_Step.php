@@ -62,45 +62,48 @@ class NewsletterSignup_Step extends OrderStep {
 			$recipient->Surname = $billingAddress->Surname;
 			$recipient->write();
 			$mailingListToAdd = $member->MailingLists();
-			DB::query("DELETE FROM Member_MailingLists WHERE MemberID = ".$member->ID.";");
-			$recipientsMailingLists = $recipient->MailingLists();
-			$recipientsMailingLists->addMany($mailingListToAdd->map("ID", "ID")->toArray());
-			if($this->SendMessageToAdmin){
-				$member = $order->Member();
-				if($member) {
-					if($member->NewsletterSignup) {
-						$from = Order_Email::get_from_email();
-						$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
-						$billingAddressOutput = "";
-						if($billingAddress) {
-							$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
-						}
-						$body = "
-							"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
-							"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>".
-							"<br /><br />".$billingAddressOutput;
-						$email = new Email(
-							$from,
-							$to = Order_Email::get_from_email(),
-							$subject,
-							$body
-						);
-						$email->send();
-						//copy!
-						if($this->SendCopyTo){
+			DB::query("DELETE FROM MailingList_Recipients WHERE RecipientID = ".$recipient->ID.";");
+			if($mailingListToAdd->count()) {
+				$recipientsMailingLists = $recipient->MailingLists();
+				$recipientsMailingLists->addMany($mailingListToAdd->map("ID", "ID")->toArray());
+				if($this->SendMessageToAdmin){
+					$member = $order->Member();
+					if($member) {
+						if($member->NewsletterSignup) {
+							$from = Order_Email::get_from_email();
+							$subject = _t("NewsletterSignup.NEWSLETTERREGISTRATIONUPDATE", "newsletter registration update");
+							$billingAddressOutput = "";
+							if($billingAddress) {
+								$billingAddressOutput = $billingAddress->renderWith("Order_AddressBilling");
+							}
+							$body = "
+								"._t("NewsletterSignup.EMAIL", "Email").": <strong>".$member->Email."</strong>".
+								"<br /><br />"._t("NewsletterSignup.SIGNUP", "Signed Up").": <strong>".($member->NewsletterSignup ? _t("NewsletterSignup.YES", "Yes") : _t("NewsletterSignup.NO", "No"))."</strong>".
+								"<br /><br />".$billingAddressOutput;
 							$email = new Email(
 								$from,
-								$to = $this->SendCopyTo,
+								$to = Order_Email::get_from_email(),
 								$subject,
 								$body
 							);
 							$email->send();
+							//copy!
+							if($this->SendCopyTo){
+								$email = new Email(
+									$from,
+									$to = $this->SendCopyTo,
+									$subject,
+									$body
+								);
+								$email->send();
+							}
 						}
+						//this can be used to connect with third parties (e.g. )
+
 					}
-					//this can be used to connect with third parties (e.g. )
-					$this->extend("updateNewsletterStatus", $member);
 				}
 			}
+			$this->extend("updateNewsletterStatus", $member, $recipient);
 		}
 		return true;
 	}
