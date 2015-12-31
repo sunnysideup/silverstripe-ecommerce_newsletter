@@ -7,8 +7,8 @@
  */
 
 
-class NewsletterSignupDecorator extends DataExtension {
+class NewsletterSignupDecorator extends DataExtension
+{
 
-	private static $many_many = array("MailingLists" => "MailingList");
-
+    private static $many_many = array("MailingLists" => "MailingList");
 }
