@@ -3,12 +3,14 @@
     "type": "silverstripe-module",
     "description": "add a newsletter signup to your e-commerce checkout",
     "keywords": [
+        "Silverstripe-CMS",
+        "CMS",
+        "Silverstripe",
         "ecommerce",
         "e-commerce",
         "shop",
         "newsletter",
         "news letter",
-        "silverstripe",
         "signup to newsletter"
     ],
     "license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
@@ -20,8 +22,10 @@
         }
     ],
     "require": {
-        "sunnysideup/ecommerce": "dev-master",
-        "silverstripe/newsletter": "*"
+        "sunnysideup/ecommerce": "*",
+        "silverstripe/newsletter": "*",
+        "silverstripe/framework": "~3.1",
+        "silverstripe/cms": "~3.1"
     },
     "extra": {
         "installer-name": "ecommerce_newsletter"
